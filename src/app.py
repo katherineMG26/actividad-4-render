@@ -164,12 +164,41 @@ def render_tab(tab, dep_sel, meses):
         # Top 5 violentas
         fig_viol = px.bar(top_5_violentas, x='MUNICIPIO', y='Homicidios', title='Top 5 Ciudades Violentas')
         fig_viol.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+        # Pie ciudades indice de mortalidad
+        ##############################
+        if(dep_sel == None):
+            filtered_counts_mort = df.copy()
+        else:
+            filtered_counts_mort = df[df["DEPARTAMENTO"] == dep_sel]
+ 
+        filtered_counts_mort_1 = filtered_counts_mort.groupby('MUNICIPIO').size().reset_index(name='Muertes')
+        filtered_counts_mort_1['Porcentaje'] = (filtered_counts_mort_1['Muertes'] / filtered_counts_mort_1['Muertes'].sum() * 100)
+        df_mortalidad_menores = (
+            filtered_counts_mort_1
+            .sort_values(by="Porcentaje", ascending=True)
+            .head(10)
+        )
+ 
+        fig_pie_mort = px.pie(df_mortalidad_menores, names='MUNICIPIO', values='Porcentaje', title=f"10 municipios con menor índice de mortalidad {dep_sel}")
+        fig_pie_mort.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+        ######################################################################3
+        # muertes por sexo por departamento
+        muertes_por_sexo_dpto = filtered_counts_mort.groupby(['DEPARTAMENTO', 'SEXO']).size().reset_index(name='TOTAL')
+        fig_mort_dept = px.bar(muertes_por_sexo_dpto,
+            x="DEPARTAMENTO",
+            y="TOTAL",
+            color="SEXO",
+            barmode="group",
+            title="Muertes por sexo en cada departamento"
+        )
+        fig_mort_dept.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+        ############################################
         # Distribución por edad
         fig_edad = px.bar(df_edad.sort_values('GrupoEdad'), x='GrupoEdad', y='Total', title='Distribución por edad')
         fig_edad.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
  
         return html.Div([
-            dbc.Row([dbc.Col(dcc.Graph(figure=fig_map), md=6), dbc.Col(dcc.Graph(figure=fig_line), md=6)], className="mb-4"),
+            dbc.Row([dbc.Col(dcc.Graph(figure=fig_map), md=6), dbc.Col(dcc.Graph(figure=fig_line), md=6), dbc.Col(dcc.Graph(figure=fig_pie_mort), md=6), dbc.Col(dcc.Graph(figure=fig_mort_dept), md=6)], className="mb-4"),
             dbc.Row([dbc.Col(dcc.Graph(figure=fig_viol), md=6), dbc.Col(dcc.Graph(figure=fig_edad), md=6)], className="mb-4")
         ])
     else:
@@ -196,10 +225,10 @@ def render_tab(tab, dep_sel, meses):
         
         # Tabla de causas
         df_dep = df_dep.rename(columns={'Descripcion  de códigos mortalidad a cuatro caracteres': 'Descripcion'})
-        causas = df_dep.groupby('Descripcion').size().nlargest(10).reset_index(name='Total')
+        causas = df_dep.groupby(['Descripcion',"COD_MUERTE"]).size().nlargest(10).reset_index(name='Total')
         tabla = html.Table([
-            html.Thead(html.Tr([html.Th("Código"), html.Th("Total")])),
-            html.Tbody([html.Tr([html.Td(r.Descripcion), html.Td(r.Total)]) for r in causas.itertuples()])
+            html.Thead(html.Tr([html.Th("Descripcion"),html.Th("Codigo"), html.Th("Total")])),
+            html.Tbody([html.Tr([html.Td(r.Descripcion), html.Td(r.COD_MUERTE), html.Td(r.Total)]) for r in causas.itertuples()])
         ], className="table table-sm table-dark")
  
         return html.Div([
