@@ -4,6 +4,7 @@ import unicodedata
 from dash import Dash, html, dcc, Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
+import os
  
 # -------- Configuración de estilo Plotly --------
 px.defaults.template = "plotly_dark"
@@ -16,11 +17,17 @@ def normalizar(texto):
     return texto.upper().strip()
  
 # -------- Carga y preprocesamiento --------
-df = pd.read_parquet("mortalidad_2019_limpio.parquet.gzip")
+#df = pd.read_parquet("mortalidad_2019_limpio.parquet.gzip")
+# Ruta segura y relativa dentro de src/
+current_dir = os.path.dirname(__file__)
+parquet_path = os.path.join(current_dir, "mortalidad_2019_limpio.parquet.gzip")
+df = pd.read_parquet(parquet_path)
 for col in ['DEPARTAMENTO', 'MUNICIPIO']:
     df[col] = df[col].apply(normalizar)
- 
-with open("Colombia.geo.json", encoding="utf-8") as f:
+
+
+geo_path = os.path.join(current_dir, "Colombia.geo.json")
+with open(geo_path, encoding="utf-8") as f:
     geojson = json.load(f)
 for feat in geojson['features']:
     feat['id'] = normalizar(feat['properties']['NOMBRE_DPT'])
