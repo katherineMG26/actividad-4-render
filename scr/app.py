@@ -16,7 +16,7 @@ def normalizar(texto):
     return texto.upper().strip()
  
 # -------- Carga y preprocesamiento --------
-df = pd.read_csv("mortalidad_2019_limpio.csv")
+df = pd.read_parquet("mortalidad_2019_limpio.parquet.gzip")
 for col in ['DEPARTAMENTO', 'MUNICIPIO']:
     df[col] = df[col].apply(normalizar)
  
