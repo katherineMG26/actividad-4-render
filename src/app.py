@@ -237,11 +237,10 @@ def render_tab(tab, dep_sel, meses):
               .value_counts()
               .sort_index()
               .reset_index(name='Conteo')
-              .rename(columns={'index': 'Rango de Edad'})
         )
         fig_hist = px.bar(
             conteos,
-            x='Rango de Edad',
+            x='RANGO_EDAD',
             y='Conteo',
             title='Edades por rangos de 5 años'
         )
