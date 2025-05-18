@@ -223,11 +223,29 @@ def render_tab(tab, dep_sel, meses):
         
         # fig_hist = px.histogram(df_dep, x='GRUPO_EDAD1', nbins=len(df_dep['GRUPO_EDAD1'].unique()), title='Edades Detalle')
         # fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-        
-        fig_hist = px.histogram(df_dep, x='GRUPO_EDAD1', title='Edades Detalle', xbins=dict(start=0, end=int(df_dep['GRUPO_EDAD1'].max() // 5 * 5 + 5), size=5))
+        max_edad = int(df_dep['GRUPO_EDAD1'].max())
+        bins = list(range(0, max_edad + 5, 5))
+        labels = [f"{i}-{i+4}" for i in bins[:-1]]
+        df_dep['RANGO_EDAD'] = pd.cut(
+            df_dep['GRUPO_EDAD1'],
+            bins=bins,
+            right=True,
+            labels=labels
+        )
+        conteos = (
+            df_dep['RANGO_EDAD']
+              .value_counts()
+              .sort_index()
+              .reset_index(name='Conteo')
+              .rename(columns={'index': 'Rango de Edad'})
+        )
+        fig_hist = px.bar(
+            conteos,
+            x='Rango de Edad',
+            y='Conteo',
+            title='Edades por rangos de 5 años'
+        )
         fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-     
-        
         # Tabla de causas
         df_dep = df_dep.rename(columns={'Descripcion  de códigos mortalidad a cuatro caracteres': 'Descripcion'})
         causas = df_dep.groupby(['Descripcion',"COD_MUERTE"]).size().nlargest(10).reset_index(name='Total')
