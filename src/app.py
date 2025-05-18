@@ -220,21 +220,12 @@ def render_tab(tab, dep_sel, meses):
         fig_pie = px.pie(df_sexo, names='SEXO', values='Total', title='Distribución por sexo')
         fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         # Histograma edades detalle
-     
+        
         # fig_hist = px.histogram(df_dep, x='GRUPO_EDAD1', nbins=len(df_dep['GRUPO_EDAD1'].unique()), title='Edades Detalle')
         # fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-        fig_hist = px.histogram(
-          df_dep,
-          x='GRUPO_EDAD1',
-          title='Edades Detalle',
-          # define bins de 5 unidades empezando en 0 hasta el máximo
-          xbins=dict(
-              start=0,
-              end=int(df_dep['GRUPO_EDAD1'].max() // 5 * 5 + 5),
-              size=5
-          )
-      )
-      fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+        
+        fig_hist = px.histogram(df_dep, x='GRUPO_EDAD1', title='Edades Detalle', xbins=dict(start=0, end=int(df_dep['GRUPO_EDAD1'].max() // 5 * 5 + 5), size=5))
+        fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
      
         
         # Tabla de causas
