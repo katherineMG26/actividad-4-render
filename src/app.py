@@ -179,7 +179,7 @@ def render_tab(tab, dep_sel, meses):
             .head(10)
         )
  
-        fig_pie_mort = px.pie(df_mortalidad_menores, names='MUNICIPIO', values='Porcentaje', title=f"10 municipios con menor índice de mortalidad {dep_sel}")
+        fig_pie_mort = px.pie(df_mortalidad_menores, names='MUNICIPIO', values='Porcentaje', title=f"10 municipios con menor índice de mortalidad")
         fig_pie_mort.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         ######################################################################3
         # muertes por sexo por departamento
