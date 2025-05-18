@@ -220,9 +220,24 @@ def render_tab(tab, dep_sel, meses):
         fig_pie = px.pie(df_sexo, names='SEXO', values='Total', title='Distribución por sexo')
         fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         # Histograma edades detalle
-        fig_hist = px.histogram(df_dep, x='GRUPO_EDAD1', nbins=len(df_dep['GRUPO_EDAD1'].unique()), title='Edades Detalle')
+     
+        # fig_hist = px.histogram(df_dep, x='GRUPO_EDAD1', nbins=len(df_dep['GRUPO_EDAD1'].unique()), title='Edades Detalle')
+        # fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+        df_dep["EDAD_INT"] = pd.to_numeric(df_dep["GRUPO_EDAD1"], errors="coerce")
+        bins = list(range(0, df_dep["EDAD_INT"].max() + 5, 5))  # Desde 0 hasta la edad máxima
+        labels = [f"{i}–{i+4}" for i in bins[:-1]]  # Etiquetas: "0–4", "5–9", etc.
+        df_dep["GRUPO_EDAD_5"] = pd.cut(df_dep["EDAD_INT"], bins=bins, labels=labels, right=False)
+ 
+        fig_hist = px.histogram(
+            df_dep,
+            x="GRUPO_EDAD_5",
+            title="Edades agrupadas en intervalos de 5 años",
+            category_orders={"GRUPO_EDAD_5": labels}
+        )
+ 
         fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-        
+
+     
         # Tabla de causas
         df_dep = df_dep.rename(columns={'Descripcion  de códigos mortalidad a cuatro caracteres': 'Descripcion'})
         causas = df_dep.groupby(['Descripcion',"COD_MUERTE"]).size().nlargest(10).reset_index(name='Total')
