@@ -194,9 +194,8 @@ def render_tab(tab, dep_sel, meses):
         fig_mort_dept.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         ############################################
         # Distribución por edad
-        fig_edad = px.bar(df_edad.sort_values('GrupoEdad'), x='GrupoEdad', y='Total', title='Distribución por edad')
-        fig_edad.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
- 
+        #fig_edad = px.bar(df_edad.sort_values('GrupoEdad'), x='GrupoEdad', y='Total', title='Distribución por edad')
+        #fig_edad.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         return html.Div([
             dbc.Row([dbc.Col(dcc.Graph(figure=fig_map), md=6), dbc.Col(dcc.Graph(figure=fig_line), md=6), dbc.Col(dcc.Graph(figure=fig_pie_mort), md=6), dbc.Col(dcc.Graph(figure=fig_mort_dept), md=6)], className="mb-4"),
             dbc.Row([dbc.Col(dcc.Graph(figure=fig_viol), md=6)], className="mb-4")
@@ -224,7 +223,6 @@ def render_tab(tab, dep_sel, meses):
         bins = list(range(0, df_dep["EDAD_INT"].max() + 5, 5))  # Desde 0 hasta la edad máxima
         labels = [f"{i}–{i+4}" for i in bins[:-1]]  # Etiquetas: "0–4", "5–9", etc.
         df_dep["GRUPO_EDAD_5"] = pd.cut(df_dep["EDAD_INT"], bins=bins, labels=labels, right=False)
- 
         fig_hist = px.histogram(
             df_dep,
             x="GRUPO_EDAD_5",
