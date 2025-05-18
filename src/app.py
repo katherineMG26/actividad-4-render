@@ -223,30 +223,19 @@ def render_tab(tab, dep_sel, meses):
      
         # fig_hist = px.histogram(df_dep, x='GRUPO_EDAD1', nbins=len(df_dep['GRUPO_EDAD1'].unique()), title='Edades Detalle')
         # fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-        df_dep["EDAD_INT"] = pd.to_numeric(df_dep["GRUPO_EDAD1"], errors="coerce").astype("Int64")
-        df_dep = df_dep[df_dep["EDAD_INT"].between(0, 100)]
-        bins = list(range(0, 105, 5))
-        labels = [f"{i}–{i+4}" for i in bins[:-1]]
-        df_dep["GRUPO_EDAD_5"] = pd.cut(df_dep["EDAD_INT"], bins=bins, labels=labels, right=False)
-        conteos = (
-            df_dep["GRUPO_EDAD_5"]
-            .value_counts(sort=False)          # mantiene el orden de bins
-            .reset_index(name="conteo")
-            .rename(columns={"index": "intervalo"})
-        )
-        fig_hist = px.bar(
-            conteos,
-            x="intervalo",
-            y="conteo",
-            title="Edades agrupadas en intervalos de 5 años"
-        )
-        fig_hist.update_layout(
-            xaxis_title="Rango de edad",
-            yaxis_title="Número de registros",
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)"
-        )
-
+        fig_hist = px.histogram(
+          df_dep,
+          x='GRUPO_EDAD1',
+          title='Edades Detalle',
+          # define bins de 5 unidades empezando en 0 hasta el máximo
+          xbins=dict(
+              start=0,
+              end=int(df_dep['GRUPO_EDAD1'].max() // 5 * 5 + 5),
+              size=5
+          )
+      )
+      fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+     
         
         # Tabla de causas
         df_dep = df_dep.rename(columns={'Descripcion  de códigos mortalidad a cuatro caracteres': 'Descripcion'})
