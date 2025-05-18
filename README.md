@@ -12,3 +12,5 @@ Top 5 ciudades con más homicidios
 Filtros interactivos por departamento y rango de meses
 
 El proyecto fue desplegado en la nube utilizando Render, integrando control de versiones mediante Git y automatizando el despliegue continuo desde este repositorio.
+
+Enlace app: https://actividad-4-render.onrender.com
