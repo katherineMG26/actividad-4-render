@@ -199,7 +199,7 @@ def render_tab(tab, dep_sel, meses):
  
         return html.Div([
             dbc.Row([dbc.Col(dcc.Graph(figure=fig_map), md=6), dbc.Col(dcc.Graph(figure=fig_line), md=6), dbc.Col(dcc.Graph(figure=fig_pie_mort), md=6), dbc.Col(dcc.Graph(figure=fig_mort_dept), md=6)], className="mb-4"),
-            dbc.Row([dbc.Col(dcc.Graph(figure=fig_viol), md=6), dbc.Col(dcc.Graph(figure=fig_edad), md=6)], className="mb-4")
+            dbc.Row([dbc.Col(dcc.Graph(figure=fig_viol), md=6)], className="mb-4")
         ])
     else:
 
