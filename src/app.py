@@ -223,21 +223,31 @@ def render_tab(tab, dep_sel, meses):
      
         # fig_hist = px.histogram(df_dep, x='GRUPO_EDAD1', nbins=len(df_dep['GRUPO_EDAD1'].unique()), title='Edades Detalle')
         # fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
-        df_dep["EDAD_INT"] = pd.to_numeric(df_dep["GRUPO_EDAD1"], errors="coerce")
-        bins = list(range(0, df_dep["EDAD_INT"].max() + 5, 5))  # Desde 0 hasta la edad máxima
-        labels = [f"{i}–{i+4}" for i in bins[:-1]]  # Etiquetas: "0–4", "5–9", etc.
+        df_dep["EDAD_INT"] = pd.to_numeric(df_dep["GRUPO_EDAD1"], errors="coerce").astype("Int64")
+        df_dep = df_dep[df_dep["EDAD_INT"].between(0, 100)]
+        bins = list(range(0, 105, 5))
+        labels = [f"{i}–{i+4}" for i in bins[:-1]]
         df_dep["GRUPO_EDAD_5"] = pd.cut(df_dep["EDAD_INT"], bins=bins, labels=labels, right=False)
- 
-        fig_hist = px.histogram(
-            df_dep,
-            x="GRUPO_EDAD_5",
-            title="Edades agrupadas en intervalos de 5 años",
-            category_orders={"GRUPO_EDAD_5": labels}
+        conteos = (
+            df_dep["GRUPO_EDAD_5"]
+            .value_counts(sort=False)          # mantiene el orden de bins
+            .reset_index(name="conteo")
+            .rename(columns={"index": "intervalo"})
         )
- 
-        fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+        fig_hist = px.bar(
+            conteos,
+            x="intervalo",
+            y="conteo",
+            title="Edades agrupadas en intervalos de 5 años"
+        )
+        fig_hist.update_layout(
+            xaxis_title="Rango de edad",
+            yaxis_title="Número de registros",
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
 
-     
+        
         # Tabla de causas
         df_dep = df_dep.rename(columns={'Descripcion  de códigos mortalidad a cuatro caracteres': 'Descripcion'})
         causas = df_dep.groupby(['Descripcion',"COD_MUERTE"]).size().nlargest(10).reset_index(name='Total')
