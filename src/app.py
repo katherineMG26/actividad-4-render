@@ -65,7 +65,7 @@ app.layout = dbc.Container(
         # Navbar superior
         dbc.NavbarSimple(
             brand="📊 Mortalidad Colombia 2019",
-            color="dark", dark=True, sticky="top", style={"marginLeft": "-370px"}
+            color="dark", dark=True, sticky="top"
         ),
         # Layout principal
         dbc.Row([
@@ -179,7 +179,7 @@ def render_tab(tab, dep_sel, meses):
             .head(10)
         )
  
-        fig_pie_mort = px.pie(df_mortalidad_menores, names='MUNICIPIO', values='Porcentaje', title=f"10 municipios con menor índice de mortalidad")
+        fig_pie_mort = px.pie(df_mortalidad_menores, names='MUNICIPIO', values='Porcentaje', title=f"10 municipios con menor índice de mortalidad {dep_sel}")
         fig_pie_mort.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         ######################################################################3
         # muertes por sexo por departamento
@@ -194,11 +194,12 @@ def render_tab(tab, dep_sel, meses):
         fig_mort_dept.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         ############################################
         # Distribución por edad
-        #fig_edad = px.bar(df_edad.sort_values('GrupoEdad'), x='GrupoEdad', y='Total', title='Distribución por edad')
-        #fig_edad.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+        fig_edad = px.bar(df_edad.sort_values('GrupoEdad'), x='GrupoEdad', y='Total', title='Distribución por edad')
+        fig_edad.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+ 
         return html.Div([
             dbc.Row([dbc.Col(dcc.Graph(figure=fig_map), md=6), dbc.Col(dcc.Graph(figure=fig_line), md=6), dbc.Col(dcc.Graph(figure=fig_pie_mort), md=6), dbc.Col(dcc.Graph(figure=fig_mort_dept), md=6)], className="mb-4"),
-            dbc.Row([dbc.Col(dcc.Graph(figure=fig_viol), md=6)], className="mb-4")
+            dbc.Row([dbc.Col(dcc.Graph(figure=fig_viol), md=6), dbc.Col(dcc.Graph(figure=fig_edad), md=6)], className="mb-4")
         ])
     else:
 
@@ -219,18 +220,8 @@ def render_tab(tab, dep_sel, meses):
         fig_pie = px.pie(df_sexo, names='SEXO', values='Total', title='Distribución por sexo')
         fig_pie.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         # Histograma edades detalle
-        #df_dep["EDAD_INT"] = pd.to_numeric(df_dep["GRUPO_EDAD1"], errors="coerce")
-        #bins = list(range(0, df_dep["EDAD_INT"].max() + 5, 5))  # Desde 0 hasta la edad máxima
-        #labels = [f"{i}–{i+4}" for i in bins[:-1]]  # Etiquetas: "0–4", "5–9", etc.
-        # df_dep["GRUPO_EDAD_5"] = pd.cut(df_dep["EDAD_INT"], bins=bins, labels=labels, right=False)
-        # fig_hist = px.histogram(
-        #     df_dep,
-        #     x="GRUPO_EDAD_5",
-        #     title="Edades agrupadas en intervalos de 5 años",
-        #     category_orders={"GRUPO_EDAD_5": labels}
-        # )
- 
-        # fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+        fig_hist = px.histogram(df_dep, x='GRUPO_EDAD1', nbins=len(df_dep['GRUPO_EDAD1'].unique()), title='Edades Detalle')
+        fig_hist.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
         
         # Tabla de causas
         df_dep = df_dep.rename(columns={'Descripcion  de códigos mortalidad a cuatro caracteres': 'Descripcion'})
